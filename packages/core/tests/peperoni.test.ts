@@ -1,10 +1,5 @@
 import { expect, test, describe } from "vitest";
 import { p } from "../src/peperoni";
-import resolveStyleValues from "../src/resolveStyleValues";
-import getAllSlotBaseStyleValues from "../src/getAllSlotBaseStyleValues";
-import getSlotVariancesStyleValues from "../src/getSlotVariancesStyleValues";
-import getSlotVariancesStyleValuesRecursively from "../src/getSlotVariancesStyleValuesRecursively";
-import { getAllStyleValues } from "../src/getAllStyleValues";
 
 describe("elements", () => {
   test("define elements", () => {
@@ -141,7 +136,7 @@ describe("variants", () => {
     });
 
     // @ts-expect-error (this scenario can happen in javascript, not in typescript)
-    const { button, card } = style({ variant1: "variantValue2" });
+    const { button, card } = style({ variant1: "nonExistentValue" });
 
     expect(button()).toEqual("class-1");
   });
