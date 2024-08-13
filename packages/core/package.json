@@ -1,0 +1,24 @@
+{
+  "name": "peperoni",
+  "version": "0.0.1",
+  "description": "Style Variance API",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest --typecheck"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/peperoniorg/peperoni.git"
+  },
+  "keywords": [
+    "variants",
+    "tailwind",
+    "classes"
+  ],
+  "author": "Russian Rebouças",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/peperoniorg/peperoni/issues"
+  },
+  "homepage": "https://github.com/peperoniorg/peperoni#readme"
+}
