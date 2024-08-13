@@ -1,5 +1,13 @@
 import type { Slots, StyleConfig, StyleValue } from "./types";
 
+/**
+ * Retrieves all base style values for a given slot name.
+ *
+ * @param slotName - The name of the slot.
+ * @param config - The style configuration object.
+ * @returns An array of style values for the slot.
+ */
+
 const getAllSlotBaseStyleValues = (
   slotName: string,
   config: StyleConfig
