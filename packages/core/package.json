@@ -4,7 +4,8 @@
   "description": "Style Variance API",
   "main": "index.js",
   "scripts": {
-    "test": "vitest --typecheck"
+    "test": "vitest --typecheck",
+    "coverage": "vitest run --coverage"
   },
   "repository": {
     "type": "git",
@@ -20,5 +21,9 @@
   "bugs": {
     "url": "https://github.com/peperoniorg/peperoni/issues"
   },
-  "homepage": "https://github.com/peperoniorg/peperoni#readme"
+  "homepage": "https://github.com/peperoniorg/peperoni#readme",
+  "devDependencies": {
+    "@vitest/coverage-v8": "^2.0.5",
+    "vitest": "^2.0.5"
+  }
 }

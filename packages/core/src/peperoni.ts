@@ -1,6 +1,12 @@
 import createSlotClassesResolver from "./createSlotClassesResolver";
 import getAllSlotsNames from "./getAllSlotsNames";
-import type { Slots, PReturn, StyleConfig, Variants } from "./types";
+import type {
+  Slots,
+  PReturn,
+  StyleConfig,
+  Variants,
+  VariantsValues,
+} from "./types";
 
 export function p<
   S extends Slots,
@@ -10,11 +16,15 @@ export function p<
 >(config: StyleConfig<S, V, X>): PReturn<S, V, X, StyleConfig<S, V>> {
   const slotsNames = getAllSlotsNames(config as StyleConfig);
 
-  const applyStyles = () => {
+  const applyStyles = (variantsValues?: VariantsValues) => {
     return slotsNames.reduce((acc, slotName) => {
       return {
         ...acc,
-        [slotName]: createSlotClassesResolver(slotName, config as StyleConfig),
+        [slotName]: createSlotClassesResolver(
+          slotName,
+          config as StyleConfig,
+          variantsValues
+        ),
       };
     }, {});
   };

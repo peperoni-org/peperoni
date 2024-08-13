@@ -11,9 +11,18 @@ import type { StyleConfig, VariantsValues } from "./types";
  */
 
 const createSlotClassesResolver =
-  (slotName: string, config: StyleConfig) =>
-  (variantsValues: VariantsValues): string => {
-    const styleValues = getAllStyleValues(slotName, config, variantsValues);
+  (slotName: string, config: StyleConfig, variantsValues?: VariantsValues) =>
+  (specifVariantsValues?: VariantsValues): string => {
+    const mergedVariantsValues: VariantsValues = {
+      ...variantsValues,
+      ...specifVariantsValues,
+    };
+
+    const styleValues = getAllStyleValues(
+      slotName,
+      config,
+      mergedVariantsValues
+    );
     return resolveStyleValues(styleValues);
   };
 
