@@ -1,18 +1,18 @@
-import { StyleConfig, StyleValue, VariantsValues } from "./types";
+import { StyleConfig, StyleValue, VariantsProps } from "./types";
 
 /**
  * Retrieves all style values for a given slot.
  *
  * @param slotName - The name of the slot.
  * @param config - The style configuration.
- * @param variantsValues - The values of the variants.
+ * @param variantsProps - The values of the variants.
  * @returns An array of style values.
  */
 
 const getSlotVariancesStyleValues = (
   slotName: string,
   config: StyleConfig,
-  variantsValues: VariantsValues
+  variantsProps: VariantsProps
 ): StyleValue[] => {
   const variants = config.variants;
 
@@ -22,11 +22,11 @@ const getSlotVariancesStyleValues = (
 
   return Object.entries(variants).reduce(
     (acc, [variantName, variantValues]) => {
-      if (!variantsValues[variantName]) {
+      if (!variantsProps[variantName]) {
         return acc;
       }
 
-      const variantValue = variantValues[variantsValues[variantName]];
+      const variantValue = variantValues[variantsProps[variantName]];
 
       if (!variantValue) {
         return acc;

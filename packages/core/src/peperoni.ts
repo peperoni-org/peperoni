@@ -5,7 +5,7 @@ import type {
   PReturn,
   StyleConfig,
   BaseVariants,
-  VariantsValues,
+  VariantsProps,
 } from "./types";
 
 export function p<
@@ -16,14 +16,14 @@ export function p<
 >(config: StyleConfig<S, V, X>): PReturn<S, V, X, StyleConfig<S, V>> {
   const slotsNames = getAllSlotsNames(config as StyleConfig);
 
-  const variantsApplier = (variantsValues?: VariantsValues) => {
+  const variantsApplier = (variantsProps?: VariantsProps) => {
     return slotsNames.reduce((acc, slotName) => {
       return {
         ...acc,
         [slotName]: createSlotClassesResolver(
           slotName,
           config as StyleConfig,
-          variantsValues
+          variantsProps
         ),
       };
     }, {});
@@ -31,7 +31,7 @@ export function p<
   return Object.assign(variantsApplier, {
     config,
     slotsNames: slotsNames,
-    variantsValues: {},
+    variantsProps: {},
     variantsDefinition: {},
   }) as unknown as PReturn<S, V, X, StyleConfig<S, V>>;
 }

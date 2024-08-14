@@ -1,6 +1,6 @@
 import { getAllStyleValues } from "./getAllStyleValues";
 import resolveStyleValues from "./resolveStyleValues";
-import type { StyleConfig, VariantsValues } from "./types";
+import type { StyleConfig, VariantsProps } from "./types";
 
 /**
  * Creates a resolver function for slot classes.
@@ -11,10 +11,10 @@ import type { StyleConfig, VariantsValues } from "./types";
  */
 
 const createSlotClassesResolver =
-  (slotName: string, config: StyleConfig, variantsValues?: VariantsValues) =>
-  (specifVariantsValues?: VariantsValues): string => {
-    const mergedVariantsValues: VariantsValues = {
-      ...variantsValues,
+  (slotName: string, config: StyleConfig, variantsProps?: VariantsProps) =>
+  (specifVariantsValues?: VariantsProps): string => {
+    const mergedVariantsValues: VariantsProps = {
+      ...variantsProps,
       ...specifVariantsValues,
     };
 

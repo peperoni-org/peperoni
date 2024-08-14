@@ -1,10 +1,16 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { If } from "ts-toolbelt/out/Any/If";
-import { Cast, Keys } from "ts-toolbelt/out/Any/_api";
+import { Cast, Compute, Is, Keys } from "ts-toolbelt/out/Any/_api";
 import { List } from "ts-toolbelt/out/List/List";
 import { Merge, Optional, Partial } from "ts-toolbelt/out/Object/_api";
 import { ListOf, Merge as MergeUnion } from "ts-toolbelt/out/Union/_api";
-import { HasExtendedSlotsNames, IsEmpty } from "./util.types";
+import {
+  HasExtendedSlotsNames,
+  IsEmpty,
+  IsSlotsEmpty,
+  MergeVariantProps,
+  VariantPropsToValues,
+} from "./util.types";
 
 export type StyleValue = string | (() => string);
 
@@ -16,8 +22,12 @@ export type BaseVariants = {
   };
 };
 
-export type VariantsValues<V extends BaseVariants = BaseVariants> = {
+export type VariantsProps<V extends BaseVariants = BaseVariants> = {
   [variantName in keyof V]: keyof V[variantName];
+};
+
+export type VariantsValues<V extends BaseVariants = BaseVariants> = {
+  [variantName in keyof V]: ListOf<keyof V[variantName]>;
 };
 
 export type Variants<V extends BaseVariants, slotNames extends List> = {
@@ -26,8 +36,10 @@ export type Variants<V extends BaseVariants, slotNames extends List> = {
   };
 };
 
-export type Conditions<VV extends object, EN extends List> = {
-  variants: Partial<NoInfer<VV>>;
+export type Rules<VV extends object, EN extends List> = {
+  if: {
+    variants: Partial<NoInfer<VV>>;
+  };
   slots: {
     [slotName in EN[number]]?: string;
   };
@@ -41,17 +53,22 @@ export type PReturn<
   // eslint-disable-next-line @typescript-eslint/ban-types
   C extends object = {}
 > = {
-  config: Cast<NoInfer<C>, StyleConfig>;
+  config: NoInfer<C>;
   slotsNames: If<
     HasExtendedSlotsNames<X>,
-    ListOf<Keys<S> | X["slotsNames"][number]>,
+    If<
+      IsSlotsEmpty<S>,
+      X["slotsNames"],
+      ListOf<Keys<S> | X["slotsNames"][number]>
+    >,
     ListOf<Keys<S>>
   >;
-  variantsValues: If<
-    IsEmpty<X["variantsValues"]>,
-    VariantsValues<V>,
-    MergeUnion<X["variantsValues"] | VariantsValues<V>>
+  selfSlots: NoInfer<S>;
+  variantsProps: MergeVariantProps<V, X["variantsProps"]>;
+  variantsValues: VariantPropsToValues<
+    MergeVariantProps<V, X["variantsProps"]>
   >;
+  extendedVariantsValues: X["variantsValues"];
   variantsDefinition: If<
     IsEmpty<X["variantsDefinition"]>,
     Variants<V, PReturn<S, V, X>["slotsNames"]>,
@@ -61,9 +78,9 @@ export type PReturn<
       "deep"
     >
   >;
-  (props?: Optional<PReturn<S, V, X>["variantsValues"]>): {
+  (props?: Optional<PReturn<S, V, X>["variantsProps"]>): {
     [slotName in PReturn<S, V, X>["slotsNames"][number]]: (
-      props?: Optional<PReturn<S, V, X>["variantsValues"]>
+      props?: Optional<PReturn<S, V, X>["variantsProps"]>
     ) => string;
   };
 };
@@ -76,7 +93,7 @@ export type StyleConfig<
   // derived
   slotsNamesType extends List = PReturn<S, V, X>["slotsNames"],
   variantsDefinition extends object = PReturn<S, V, X>["variantsDefinition"],
-  variantsValues extends object = PReturn<S, V, X>["variantsValues"]
+  variantsProps extends object = PReturn<S, V, X>["variantsProps"]
 > = {
   extend?: X;
   slots?:
@@ -85,5 +102,5 @@ export type StyleConfig<
         [K in slotsNamesType[number]]?: string;
       };
   variants?: V & Partial<variantsDefinition, "deep">;
-  conditions?: Conditions<variantsValues, PReturn<S, V, X>["slotsNames"]>[];
+  rules?: Rules<variantsProps, PReturn<S, V, X>["slotsNames"]>[];
 };
