@@ -1,4 +1,5 @@
 import getAllSlotBaseStyleValues from "./getAllSlotBaseStyleValues";
+import getAllSlotRulesStyleValuesRecursively from "./getAllSlotRulesStyleValuesRecursively";
 import getSlotVariancesStyleValuesRecursively from "./getSlotVariancesStyleValuesRecursively";
 import type { StyleConfig, StyleValue, VariantsProps } from "./types";
 
@@ -22,6 +23,11 @@ export const getAllStyleValues = (
     config,
     variantsProps
   );
+  const rulesStyleValues = getAllSlotRulesStyleValuesRecursively(
+    slotName,
+    config,
+    variantsProps
+  );
 
-  return [...baseStyleValues, ...varianceStyleValues];
+  return [...baseStyleValues, ...varianceStyleValues, ...rulesStyleValues];
 };

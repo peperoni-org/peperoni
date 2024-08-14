@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { If } from "ts-toolbelt/out/Any/If";
-import { Cast, Compute, Is, Keys } from "ts-toolbelt/out/Any/_api";
+import { Keys } from "ts-toolbelt/out/Any/_api";
 import { List } from "ts-toolbelt/out/List/List";
+
 import { Merge, Optional, Partial } from "ts-toolbelt/out/Object/_api";
-import { ListOf, Merge as MergeUnion } from "ts-toolbelt/out/Union/_api";
+import { ListOf, Merge as UnionMerge } from "ts-toolbelt/out/Union/_api";
 import {
   HasExtendedSlotsNames,
   IsEmpty,
@@ -16,9 +17,11 @@ export type StyleValue = string | (() => string);
 
 export type Slots = Record<string, StyleValue>;
 
-export type BaseVariants = {
+export type BaseVariants<slotsNames extends List = []> = {
   [variantName: string]: {
-    [variantValue: string]: Slots;
+    [variantValue: string]: {
+      [slotName in slotsNames[number]]?: string;
+    };
   };
 };
 
@@ -36,9 +39,21 @@ export type Variants<V extends BaseVariants, slotNames extends List> = {
   };
 };
 
-export type Rules<VV extends object, EN extends List> = {
+export type BaseRules = {
   if: {
-    variants: Partial<NoInfer<VV>>;
+    variants: {
+      [variantName: string]: string[];
+    };
+  };
+  slots: Record<string, string>;
+};
+
+export type Rules<VV extends BaseRules = BaseRules, EN extends List = List> = {
+  if: {
+    variants: {
+      // @ts-expect-error
+      [variantName in keyof VV]?: VV[variantName][number][];
+    };
   };
   slots: {
     [slotName in EN[number]]?: string;
@@ -87,20 +102,28 @@ export type PReturn<
 
 export type StyleConfig<
   S extends Slots = Slots,
-  V extends BaseVariants = BaseVariants,
+  V extends BaseVariants<slotsNames> = BaseVariants,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   X extends PReturn<any, any, any> = PReturn<any, any, any>,
   // derived
-  slotsNamesType extends List = PReturn<S, V, X>["slotsNames"],
+  slotsNames extends List = PReturn<S, V, X>["slotsNames"],
   variantsDefinition extends object = PReturn<S, V, X>["variantsDefinition"],
-  variantsProps extends object = PReturn<S, V, X>["variantsProps"]
+  variantsValues extends object = PReturn<S, V, X>["variantsValues"]
 > = {
   extend?: X;
   slots?:
     | S
     | {
-        [K in slotsNamesType[number]]?: string;
+        [K in slotsNames[number]]?: string;
       };
-  variants?: V & Partial<variantsDefinition, "deep">;
-  rules?: Rules<variantsProps, PReturn<S, V, X>["slotsNames"]>[];
+  // variants?: V & Partial<variantsDefinition, "deep">;
+  variants?: V & {
+    [K in keyof variantsDefinition]?: {
+      [K2 in keyof variantsDefinition[K]]?: {
+        [K3 in slotsNames[number]]?: string;
+      };
+    };
+  };
+  // @ts-expect-error
+  rules?: Rules<variantsValues, slotsNames>[];
 };
