@@ -4,19 +4,19 @@ import type {
   Slots,
   PReturn,
   StyleConfig,
-  Variants,
+  BaseVariants,
   VariantsValues,
 } from "./types";
 
 export function p<
   S extends Slots,
-  V extends Variants,
+  V extends BaseVariants,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   X extends PReturn<any, any, any> = PReturn<any, any, any>
 >(config: StyleConfig<S, V, X>): PReturn<S, V, X, StyleConfig<S, V>> {
   const slotsNames = getAllSlotsNames(config as StyleConfig);
 
-  const applyStyles = (variantsValues?: VariantsValues) => {
+  const variantsApplier = (variantsValues?: VariantsValues) => {
     return slotsNames.reduce((acc, slotName) => {
       return {
         ...acc,
@@ -28,7 +28,7 @@ export function p<
       };
     }, {});
   };
-  return Object.assign(applyStyles, {
+  return Object.assign(variantsApplier, {
     config,
     slotsNames: slotsNames,
     variantsValues: {},

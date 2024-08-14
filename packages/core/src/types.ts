@@ -4,28 +4,23 @@ import { Cast, Keys } from "ts-toolbelt/out/Any/_api";
 import { List } from "ts-toolbelt/out/List/List";
 import { Merge, Optional, Partial } from "ts-toolbelt/out/Object/_api";
 import { ListOf, Merge as MergeUnion } from "ts-toolbelt/out/Union/_api";
-
-export type IsEmpty<T, X = { [x: string]: string | number | symbol }> = [
-  T
-] extends [X]
-  ? [X] extends [T]
-    ? 1
-    : 0
-  : 0;
+import { HasExtendedSlotsNames, IsEmpty } from "./util.types";
 
 export type StyleValue = string | (() => string);
+
 export type Slots = Record<string, StyleValue>;
-export type Variants<E extends Slots = Slots> = {
+
+export type BaseVariants = {
   [variantName: string]: {
-    [variantValue: string]: E;
+    [variantValue: string]: Slots;
   };
 };
 
-export type VariantsValues<V extends Variants = Variants> = {
+export type VariantsValues<V extends BaseVariants = BaseVariants> = {
   [variantName in keyof V]: keyof V[variantName];
 };
 
-export type VariantsDefinition<V extends Variants, slotNames extends List> = {
+export type Variants<V extends BaseVariants, slotNames extends List> = {
   [variantName in keyof V]: {
     [variantValue in keyof V[variantName]]: Record<slotNames[number], string>;
   };
@@ -38,17 +33,9 @@ export type Conditions<VV extends object, EN extends List> = {
   };
 };
 
-export type IsStringNumberSymbol<T> = T extends [string, number, symbol]
-  ? false
-  : true;
-export type HasExtendedSlotsNames<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  X extends PReturn<any, any, any> = PReturn<any, any, any>
-> = IsStringNumberSymbol<X["slotsNames"]> extends true ? 1 : 0;
-
 export type PReturn<
   S extends Slots = Slots,
-  V extends Variants = Variants,
+  V extends BaseVariants = BaseVariants,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   X extends PReturn<any, any, any> = PReturn<any, any, any>,
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -67,9 +54,9 @@ export type PReturn<
   >;
   variantsDefinition: If<
     IsEmpty<X["variantsDefinition"]>,
-    VariantsDefinition<V, PReturn<S, V, X>["slotsNames"]>,
+    Variants<V, PReturn<S, V, X>["slotsNames"]>,
     Merge<
-      VariantsDefinition<V, PReturn<S, V, X>["slotsNames"]>,
+      Variants<V, PReturn<S, V, X>["slotsNames"]>,
       X["variantsDefinition"],
       "deep"
     >
@@ -83,7 +70,7 @@ export type PReturn<
 
 export type StyleConfig<
   S extends Slots = Slots,
-  V extends Variants = Variants,
+  V extends BaseVariants = BaseVariants,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   X extends PReturn<any, any, any> = PReturn<any, any, any>,
   // derived
